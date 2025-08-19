@@ -280,15 +280,21 @@ function syncGoalToggle(){
 }
 
 function gatherInputs(){
-  const age = clamp(parseN($("#age").value), 18, 120);
+  const ageVal = $("#age").value.trim();
+  if (!ageVal) throw new Error("Age is required.");
+  const age = clamp(parseN(ageVal), 18, 120);
   const sex = $("#sex").value;
   const stateCode = $("#state").value;
   const smoker = $("#smoker").value;
   const policyType = $("#policyType").value;
   const term = $("#term").value;
-  const goal = document.querySelector("input[name=goal]:checked").value;
+  const goalEl = document.querySelector("input[name=goal]:checked");
+  if (!goalEl) throw new Error("Coverage goal is required.");
+  const goal = goalEl.value;
   const deathBenefit = parseN($("#deathBenefit").value);
   const targetPremium = parseN($("#targetPremium").value);
+  if (goal === "DB" && deathBenefit <= 0) throw new Error("Death benefit is required.");
+  if (goal === "TP" && targetPremium <= 0) throw new Error("Target premium is required.");
   const heightIn = parseN($("#heightIn").value);
   const weightLb = parseN($("#weightLb").value);
   const modalSel = document.querySelector("input[name=mode]:checked")?.value || "Monthly";
@@ -303,52 +309,61 @@ function gatherInputs(){
 }
 
 function recompute(){
-  const inputs = gatherInputs();
+  try {
+    const errEl = $("#inputErr");
+    if (errEl) errEl.textContent = "";
+    const inputs = gatherInputs();
 
-  // Rider availability by product/state (simple example: NY no LTC)
-  const disabledLTC = (inputs.stateCode === "NY");
-  const ltcBox = $$("fieldset.riders input").find(cb => cb.value==="LTC");
-  if (ltcBox){ ltcBox.disabled = disabledLTC; if (disabledLTC) ltcBox.checked = false; }
+    // Rider availability by product/state (simple example: NY no LTC)
+    const disabledLTC = (inputs.stateCode === "NY");
+    const ltcBox = $$("fieldset.riders input").find(cb => cb.value==="LTC");
+    if (ltcBox){ ltcBox.disabled = disabledLTC; if (disabledLTC) ltcBox.checked = false; }
 
-  let db = inputs.deathBenefit;
-  if (inputs.goal === "TP" && inputs.targetPremium > 0){
-    db = solveDeathBenefit(inputs.targetPremium, {
-      age: inputs.age, sex: inputs.sex, policyType: inputs.policyType, smoker: inputs.smoker,
+    let db = inputs.deathBenefit;
+    if (inputs.goal === "TP" && inputs.targetPremium > 0){
+      db = solveDeathBenefit(inputs.targetPremium, {
+        age: inputs.age, sex: inputs.sex, policyType: inputs.policyType, smoker: inputs.smoker,
+        conditions: inputs.selectedConditions, riders: inputs.riders, policyFee: inputs.policyFee, modalFactor: inputs.modalFactor,
+        heightIn: inputs.heightIn, weightLb: inputs.weightLb, term: inputs.term
+      });
+      $("#deathBenefit").value = Math.max(1000, Math.round(db/1000)*1000);
+    }
+
+    const res = computePremium({
+      deathBenefit: db, age: inputs.age, sex: inputs.sex, policyType: inputs.policyType, smoker: inputs.smoker,
       conditions: inputs.selectedConditions, riders: inputs.riders, policyFee: inputs.policyFee, modalFactor: inputs.modalFactor,
       heightIn: inputs.heightIn, weightLb: inputs.weightLb, term: inputs.term
     });
-    $("#deathBenefit").value = Math.max(1000, Math.round(db/1000)*1000);
+    state.lastCalc = { inputs, res, db };
+
+    // Update live summary
+    $("#uwClass").textContent = res.uw.label;
+    $("#basePrem").textContent = money((db/1000)*res.basePer1k); // annual base
+    $("#adjPrem").textContent = money(res.billed);
+    $("#multis").textContent = `Age ${res.factors.age.toFixed(2)} · Smoker ${res.factors.smoker.toFixed(2)} · Product ${res.factors.product.toFixed(2)} · Cond ${res.factors.conditions.toFixed(2)}${inputs.policyType==="Term" ? ` · Term ${res.factors.term.toFixed(2)}`:""}`;
+
+    // Update bound text on slides
+    bind("brandName", state.company?.brand?.name);
+    bind("brandTag", state.company?.brand?.tagline);
+    bind("repName", state.company?.contact?.rep_name);
+    bind("repPhone", state.company?.contact?.rep_phone);
+    bind("repEmail", state.company?.contact?.rep_email);
+    bind("aboutText", state.company?.about);
+
+    // dynamic lists
+    renderList("#diffList", (state.company?.differentiators||[]).map(t => `<li class="build">${t}</li>`));
+    renderList("#claimsSteps", (state.company?.claims_steps||[]).map((t,i)=> `<li class="build" aria-setsize="${(state.company?.claims_steps||[]).length}" aria-posinset="${i+1}">${t}</li>`));
+    renderPersonas();
+    renderTestimonials();
+
+    // Plans
+    updatePlans();
+  } catch (err) {
+    state.lastCalc = null;
+    const errEl = $("#inputErr");
+    if (errEl) errEl.textContent = err.message;
+    updatePlans();
   }
-
-  const res = computePremium({
-    deathBenefit: db, age: inputs.age, sex: inputs.sex, policyType: inputs.policyType, smoker: inputs.smoker,
-    conditions: inputs.selectedConditions, riders: inputs.riders, policyFee: inputs.policyFee, modalFactor: inputs.modalFactor,
-    heightIn: inputs.heightIn, weightLb: inputs.weightLb, term: inputs.term
-  });
-  state.lastCalc = { inputs, res, db };
-
-  // Update live summary
-  $("#uwClass").textContent = res.uw.label;
-  $("#basePrem").textContent = money((db/1000)*res.basePer1k); // annual base
-  $("#adjPrem").textContent = money(res.billed);
-  $("#multis").textContent = `Age ${res.factors.age.toFixed(2)} · Smoker ${res.factors.smoker.toFixed(2)} · Product ${res.factors.product.toFixed(2)} · Cond ${res.factors.conditions.toFixed(2)}${inputs.policyType==="Term" ? ` · Term ${res.factors.term.toFixed(2)}`:""}`;
-
-  // Update bound text on slides
-  bind("brandName", state.company?.brand?.name);
-  bind("brandTag", state.company?.brand?.tagline);
-  bind("repName", state.company?.contact?.rep_name);
-  bind("repPhone", state.company?.contact?.rep_phone);
-  bind("repEmail", state.company?.contact?.rep_email);
-  bind("aboutText", state.company?.about);
-
-  // dynamic lists
-  renderList("#diffList", (state.company?.differentiators||[]).map(t => `<li class="build">${t}</li>`));
-  renderList("#claimsSteps", (state.company?.claims_steps||[]).map((t,i)=> `<li class="build" aria-setsize="${(state.company?.claims_steps||[]).length}" aria-posinset="${i+1}">${t}</li>`));
-  renderPersonas();
-  renderTestimonials();
-
-  // Plans
-  updatePlans();
 }
 
 function renderList(sel, items){
@@ -376,7 +391,13 @@ function renderTestimonials(){
 
 function updatePlans(){
   const { inputs, db } = state.lastCalc || {};
-  if (!inputs) return;
+  if (!inputs){
+    ["bronze","silver","gold"].forEach(tier => {
+      const el = document.getElementById(`${tier}Price`);
+      if (el) el.textContent = "N/A";
+    });
+    return;
+  }
 
   const baseRiders = inputs.riders || [];
   const mode = inputs.modalSel;
