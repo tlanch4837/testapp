@@ -479,23 +479,39 @@ function buildPlanSummaryText(){
 }
 
 /* ====== Init ====== */
-window.addEventListener("DOMContentLoaded", async () => {
-  // Load data
-  state.company = await loadJSON("data/company.json", "fallback-company");
-  state.conditions = await loadJSON("data/conditions.json", "fallback-conditions");
-  state.objections = await loadJSON("data/objections.json", "fallback-objections");
+if (typeof window !== "undefined") {
+  window.addEventListener("DOMContentLoaded", async () => {
+    // Load data
+    state.company = await loadJSON("data/company.json", "fallback-company");
+    state.conditions = await loadJSON("data/conditions.json", "fallback-conditions");
+    state.objections = await loadJSON("data/objections.json", "fallback-objections");
 
-  // Brand visuals
-  $("#brandName").textContent = state.company.brand.name;
-  $("#brandTag").textContent = state.company.brand.tagline;
-  $("#brandLogo").src = state.company.brand.logo;
+    // Brand visuals
+    $("#brandName").textContent = state.company.brand.name;
+    $("#brandTag").textContent = state.company.brand.tagline;
+    $("#brandLogo").src = state.company.brand.logo;
 
-  // Slides + UI
-  Slides.init();
-  buildConditionsUI();
-  attachEvents();
-  syncGoalToggle();
+    // Slides + UI
+    Slides.init();
+    buildConditionsUI();
+    attachEvents();
+    syncGoalToggle();
 
-  // First compute
-  recompute();
-});
+    // First compute
+    recompute();
+  });
+}
+
+// Export helpers for Node/CommonJS consumers (e.g., unit tests)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    baseRatePer1k,
+    ageFactor,
+    smokerFactor,
+    productFactor,
+    conditionsMultiplier,
+    riderCost,
+    computePremium,
+    solveDeathBenefit,
+  };
+}
