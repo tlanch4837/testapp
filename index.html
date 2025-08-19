@@ -135,7 +135,7 @@
           </div>
           <div class="plans">
             <article class="plan bronze">
-              <header><span class="badge">Bronze</span><strong class="price" id="bronzePrice">$—</strong></header>
+              <header><span class="badge">Bronze</span><strong class="price" id="bronzePrice" data-price>—</strong></header>
               <ul class="kv">
                 <li><span>Death Benefit</span> <strong id="bronzeDB">$—</strong></li>
                 <li><span>UW Class</span> <strong id="bronzeUW">—</strong></li>
@@ -146,7 +146,7 @@
               <details class="details"><summary>Compare details</summary><div id="bronzeBreak"></div></details>
             </article>
             <article class="plan silver">
-              <header><span class="badge">Silver</span><strong class="price" id="silverPrice">$—</strong></header>
+              <header><span class="badge">Silver</span><strong class="price" id="silverPrice" data-price>—</strong></header>
               <ul class="kv">
                 <li><span>Death Benefit</span> <strong id="silverDB">$—</strong></li>
                 <li><span>UW Class</span> <strong id="silverUW">—</strong></li>
@@ -157,7 +157,7 @@
               <details class="details"><summary>Compare details</summary><div id="silverBreak"></div></details>
             </article>
             <article class="plan gold">
-              <header><span class="badge">Gold</span><strong class="price" id="goldPrice">$—</strong></header>
+              <header><span class="badge">Gold</span><strong class="price" id="goldPrice" data-price>—</strong></header>
               <ul class="kv">
                 <li><span>Death Benefit</span> <strong id="goldDB">$—</strong></li>
                 <li><span>UW Class</span> <strong id="goldUW">—</strong></li>
@@ -191,10 +191,7 @@
         </div>
         <div class="field">
           <label for="state">State</label>
-          <select id="state">
-            <option value="MI">MI</option><option value="NY">NY</option><option value="CA">CA</option>
-            <option value="FL">FL</option><option value="TX">TX</option><option value="OH">OH</option>
-          </select>
+          <select id="state"><!-- populated via JS --></select>
         </div>
         <div class="field">
           <label for="smoker">Smoker</label>
@@ -202,13 +199,11 @@
         </div>
         <div class="field">
           <label for="policyType">Policy Type</label>
-          <select id="policyType">
-            <option>Term</option><option>Whole</option><option>UL</option><option>IUL</option><option>GUL</option><option>Final Expense</option>
-          </select>
+          <select id="policyType"><!-- populated via JS --></select>
         </div>
         <div class="field">
           <label for="term">Term Length (Term)</label>
-          <select id="term"><option>10</option><option>15</option><option selected>20</option><option>25</option><option>30</option></select>
+          <select id="term"><!-- populated via JS --></select>
         </div>
         <fieldset class="switch">
           <legend>Coverage Goal</legend>
@@ -255,6 +250,10 @@
             <li><span>Adjusted Premium</span> <strong id="adjPrem">$—</strong></li>
             <li><span>Key Multipliers</span> <strong id="multis">—</strong></li>
           </ul>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="calcBtn" class="btn">Calculate Premium/Death Benefit</button>
         </div>
       </form>
     </aside>
