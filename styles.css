@@ -59,6 +59,7 @@ img{max-width:100%; display:block}
 .plan header{display:flex; justify-content:space-between; align-items:center}
 .plan .badge{background:color-mix(in srgb, var(--primary), #000 10%); color:#fff; padding:6px 10px; border-radius:999px; font-weight:800}
 .plan .price{font-size:28px; font-weight:900}
+.plan.selected{outline:3px solid var(--primary)}
 .kv{list-style:none; padding:0; margin:10px 0}
 .kv li{display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed var(--border)}
 .kv li:last-child{border-bottom:none}
@@ -82,6 +83,8 @@ legend{font-weight:800}
 .cond-group label{display:flex; align-items:center; gap:8px; padding:6px 0}
 .muted{color:var(--muted)}
 .error{color:#dc2626; font-size:12px; min-height:16px}
+.actions{display:flex; justify-content:center;}
+
 
 /* Mobile: pin panel bottom 30% */
 @media (max-width: 860px){

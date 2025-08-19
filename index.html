@@ -191,10 +191,7 @@
         </div>
         <div class="field">
           <label for="state">State</label>
-          <select id="state">
-            <option value="MI">MI</option><option value="NY">NY</option><option value="CA">CA</option>
-            <option value="FL">FL</option><option value="TX">TX</option><option value="OH">OH</option>
-          </select>
+          <select id="state"><!-- populated via JS --></select>
         </div>
         <div class="field">
           <label for="smoker">Smoker</label>
@@ -202,13 +199,11 @@
         </div>
         <div class="field">
           <label for="policyType">Policy Type</label>
-          <select id="policyType">
-            <option>Term</option><option>Whole</option><option>UL</option><option>IUL</option><option>GUL</option><option>Final Expense</option>
-          </select>
+          <select id="policyType"><!-- populated via JS --></select>
         </div>
         <div class="field">
           <label for="term">Term Length (Term)</label>
-          <select id="term"><option>10</option><option>15</option><option selected>20</option><option>25</option><option>30</option></select>
+          <select id="term"><!-- populated via JS --></select>
         </div>
         <fieldset class="switch">
           <legend>Coverage Goal</legend>
@@ -255,6 +250,10 @@
             <li><span>Adjusted Premium</span> <strong id="adjPrem">$—</strong></li>
             <li><span>Key Multipliers</span> <strong id="multis">—</strong></li>
           </ul>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="calcBtn" class="btn">Calculate Premium/Death Benefit</button>
         </div>
       </form>
     </aside>
