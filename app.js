@@ -410,9 +410,11 @@ function updatePlans(){
 
     if (!priceEl || !dbEl || !uwEl || !brkEl) return; // not on final slide yet
 
-    priceEl.textContent = money(mode === "Monthly" ? billed : annual);
-    dbEl.textContent    = money(tierDB, false);
-    uwEl.textContent    = uw.label;
+    priceEl.dataset.price = billed.toFixed(2);
+    priceEl.textContent   = money(mode === "Monthly" ? billed : annual);
+    dbEl.dataset.db       = tierDB.toFixed(0);
+    dbEl.textContent      = money(tierDB, false);
+    uwEl.textContent      = uw.label;
 
     brkEl.innerHTML = `
       <ul class="kv">
