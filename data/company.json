@@ -1,0 +1,71 @@
+{
+  "brand": {
+    "name": "Atlas Life",
+    "tagline": "Protect today. Provide tomorrow.",
+    "primary": "#2563eb",
+    "secondary": "#0ea5e9",
+    "accent": "#10b981",
+    "dark": "#0b1020",
+    "light": "#ffffff",
+    "logo": "data/logo.svg"
+  },
+  "about": "Atlas Life is a demo-only carrier profile used for presentations. Financial strength and ratings here are illustrative.",
+  "benefits": [
+    "Fast, streamlined underwriting with e-app",
+    "Flexible riders for living benefits",
+    "Level term options from 10 to 30 years",
+    "Permanent solutions with guarantees",
+    "US-based service with dedicated claims advocates"
+  ],
+  "differentiators": [
+    "Instant decision for many applicants",
+    "No bloodwork in most cases",
+    "Convertible term options",
+    "Transparent pricing breakdowns"
+  ],
+  "claims_steps": [
+    "Notify us & submit claimant info",
+    "We review documents & verify",
+    "Decision & payout via preferred method"
+  ],
+  "personas": [
+    {
+      "title": "Young Family",
+      "desc": "Income replacement, mortgage protection, affordability focus"
+    },
+    {
+      "title": "Pre-Retiree",
+      "desc": "Final debts, legacy planning, liquidity"
+    },
+    {
+      "title": "Estate Planning",
+      "desc": "Guarantees, no-lapse coverage, larger face amounts"
+    },
+    {
+      "title": "Final Expense",
+      "desc": "Small, guaranteed whole life to cover end-of-life costs"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Jordan M.",
+      "quote": "The process was quick, and I knew my price upfront. Felt easy.",
+      "role": "Homeowner"
+    },
+    {
+      "name": "Priya K.",
+      "quote": "We added Waiver and Chronic Illness. The living benefits matter.",
+      "role": "Parent"
+    },
+    {
+      "name": "David C.",
+      "quote": "Clear explanations, no surprises in the policy.",
+      "role": "Small business owner"
+    }
+  ],
+  "contact": {
+    "rep_name": "Alex Rivera",
+    "rep_phone": "(555) 555-1212",
+    "rep_email": "alex.rivera@example.com"
+  }
+}

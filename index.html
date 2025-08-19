@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Atlas Life — Client Presentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#slides">Skip to slides</a>
+
+  <header class="topbar" role="banner">
+    <img id="brandLogo" src="data/logo.svg" alt="Atlas Life logo" />
+    <div class="brand-meta">
+      <h1 id="brandName">Atlas Life</h1>
+      <p id="brandTag">Protect today. Provide tomorrow.</p>
+    </div>
+    <div class="nav-tools">
+      <button id="prevBtn" class="btn btn-secondary" aria-label="Previous slide">◀</button>
+      <span id="slideCounter" aria-live="polite">1 / 10</span>
+      <button id="nextBtn" class="btn" aria-label="Next slide">Next ▶</button>
+      <button id="printBtn" class="btn btn-secondary">Print to PDF</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Stage (slides) -->
+    <main id="slides" class="stage" role="region" aria-label="Slide deck">
+      <div class="progress"><div id="progressBar"></div></div>
+
+      <!-- SLIDE 1: Title / Welcome -->
+      <section class="slide is-active" data-title="Welcome" aria-roledescription="slide">
+        <div class="slide-inner">
+          <h2 class="title build">Welcome to <span data-bind="brandName">Atlas Life</span></h2>
+          <p class="subtitle build"><span data-bind="brandTag">Protect today. Provide tomorrow.</span></p>
+          <div class="rep build">
+            <p><strong>Presented by:</strong> <span data-bind="repName">Alex Rivera</span> · <span data-bind="repPhone">(555) 555-1212</span> · <span data-bind="repEmail">alex.rivera@example.com</span></p>
+          </div>
+          <div class="notes" data-notes="Welcome & set expectations. Keep it conversational."></div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: Who We Are -->
+      <section class="slide" data-title="Who We Are">
+        <div class="slide-inner">
+          <h2 class="title build">Who we are</h2>
+          <p class="build" data-bind="aboutText">About text</p>
+          <ul class="bullets">
+            <li class="build">Financial strength: <em>illustrative ratings</em></li>
+            <li class="build">Mission: Transparent, client-first protection</li>
+            <li class="build">US-based support</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: Why Choose Us -->
+      <section class="slide" data-title="Why Choose Us">
+        <div class="slide-inner">
+          <h2 class="title build">Why choose us</h2>
+          <ul id="diffList" class="bullets"></ul>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: Products Overview -->
+      <section class="slide" data-title="Products">
+        <div class="slide-inner">
+          <h2 class="title build">Products we offer</h2>
+          <div class="products grid">
+            <div class="prod build"><h3>Term</h3><p>10–30 years level coverage.</p></div>
+            <div class="prod build"><h3>Whole</h3><p>Lifetime with guarantees.</p></div>
+            <div class="prod build"><h3>UL</h3><p>Flexible premium permanent.</p></div>
+            <div class="prod build"><h3>IUL</h3><p>Index-linked accumulation.</p></div>
+            <div class="prod build"><h3>GUL</h3><p>No-lapse guarantee.</p></div>
+            <div class="prod build"><h3>Final Expense</h3><p>Smaller, simplified whole life.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: How Claims Work -->
+      <section class="slide" data-title="Claims">
+        <div class="slide-inner">
+          <h2 class="title build">How claims work</h2>
+          <ol id="claimsSteps" class="bullets numbered"></ol>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: Client Fits -->
+      <section class="slide" data-title="Fits">
+        <div class="slide-inner">
+          <h2 class="title build">Typical client fits</h2>
+          <div id="personaGrid" class="grid personas"></div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Value & Guarantees -->
+      <section class="slide" data-title="Value">
+        <div class="slide-inner">
+          <h2 class="title build">Value & guarantees</h2>
+          <ul class="bullets">
+            <li class="build">Nonforfeiture basics and guaranteed values</li>
+            <li class="build">Transparent pricing—see how factors impact your price</li>
+            <li class="build">Convertible options and rider flexibility</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Testimonials -->
+      <section class="slide" data-title="Testimonials">
+        <div class="slide-inner">
+          <h2 class="title build">What clients say</h2>
+          <div id="testimonials" class="grid testimonials"></div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: Compliance -->
+      <section class="slide" data-title="Compliance">
+        <div class="slide-inner">
+          <h2 class="title build">Compliance & disclaimers</h2>
+          <p contenteditable="true" class="disclaimer">
+            Rates are illustrative and not carrier-specific. Actual eligibility, premiums, and benefits vary by state and underwriting results.
+            Do not share sensitive HIPAA / PII within this demo.
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: Plan Recommendation -->
+      <section class="slide" data-title="Recommendation">
+        <div class="slide-inner">
+          <h2 class="title">Our recommendation</h2>
+          <div class="plan-toggle">
+            <label><input type="radio" name="mode" value="Monthly" checked> Monthly</label>
+            <label><input type="radio" name="mode" value="Annual"> Annual</label>
+            <button class="btn btn-secondary why" id="howCalcBtn">How we calculated this</button>
+          </div>
+          <div class="plans">
+            <article class="plan bronze">
+              <header><span class="badge">Bronze</span><strong class="price" id="bronzePrice">$—</strong></header>
+              <ul class="kv">
+                <li><span>Death Benefit</span> <strong id="bronzeDB">$—</strong></li>
+                <li><span>UW Class</span> <strong id="bronzeUW">—</strong></li>
+                <li><span>Riders</span> <strong>None</strong></li>
+              </ul>
+              <p class="copy">Essentials covered at the best price.</p>
+              <button class="btn plan-cta" data-tier="bronze">Select Plan</button>
+              <details class="details"><summary>Compare details</summary><div id="bronzeBreak"></div></details>
+            </article>
+            <article class="plan silver">
+              <header><span class="badge">Silver</span><strong class="price" id="silverPrice">$—</strong></header>
+              <ul class="kv">
+                <li><span>Death Benefit</span> <strong id="silverDB">$—</strong></li>
+                <li><span>UW Class</span> <strong id="silverUW">—</strong></li>
+                <li><span>Riders</span> <strong>Waiver or ADB</strong></li>
+              </ul>
+              <p class="copy">Balanced protection and flexibility.</p>
+              <button class="btn plan-cta" data-tier="silver">Select Plan</button>
+              <details class="details"><summary>Compare details</summary><div id="silverBreak"></div></details>
+            </article>
+            <article class="plan gold">
+              <header><span class="badge">Gold</span><strong class="price" id="goldPrice">$—</strong></header>
+              <ul class="kv">
+                <li><span>Death Benefit</span> <strong id="goldDB">$—</strong></li>
+                <li><span>UW Class</span> <strong id="goldUW">—</strong></li>
+                <li><span>Riders</span> <strong>Waiver + Chronic/LTC</strong></li>
+              </ul>
+              <p class="copy">Maximum coverage and living benefits.</p>
+              <button class="btn plan-cta" data-tier="gold">Select Plan</button>
+              <details class="details"><summary>Compare details</summary><div id="goldBreak"></div></details>
+            </article>
+          </div>
+          <div class="plan-actions">
+            <button id="copyPlanBtn" class="btn btn-secondary">Copy Plan Summary</button>
+            <button id="saveClientBtn" class="btn btn-secondary">Save Client Summary (JSON)</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Persistent Right Panel -->
+    <aside class="panel" role="complementary" aria-label="Client inputs">
+      <form id="clientForm" class="inputs" novalidate>
+        <h3>Client Inputs</h3>
+        <div class="field">
+          <label for="age">Age <span class="muted">(18–85)</span></label>
+          <input id="age" type="number" min="18" max="85" value="35" required />
+          <div class="error" id="ageErr" aria-live="polite"></div>
+        </div>
+        <div class="field">
+          <label for="sex">Sex</label>
+          <select id="sex"><option>M</option><option>F</option></select>
+        </div>
+        <div class="field">
+          <label for="state">State</label>
+          <select id="state">
+            <option value="MI">MI</option><option value="NY">NY</option><option value="CA">CA</option>
+            <option value="FL">FL</option><option value="TX">TX</option><option value="OH">OH</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="smoker">Smoker</label>
+          <select id="smoker"><option value="N">N</option><option value="Y">Y</option></select>
+        </div>
+        <div class="field">
+          <label for="policyType">Policy Type</label>
+          <select id="policyType">
+            <option>Term</option><option>Whole</option><option>UL</option><option>IUL</option><option>GUL</option><option>Final Expense</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="term">Term Length (Term)</label>
+          <select id="term"><option>10</option><option>15</option><option selected>20</option><option>25</option><option>30</option></select>
+        </div>
+        <fieldset class="switch">
+          <legend>Coverage Goal</legend>
+          <label><input type="radio" name="goal" value="DB" checked> Desired Death Benefit</label>
+          <label><input type="radio" name="goal" value="TP"> Target Premium</label>
+        </fieldset>
+        <div class="field" id="dbField">
+          <label for="deathBenefit">Death Benefit ($)</label>
+          <input id="deathBenefit" type="number" step="1000" min="1000" value="250000" />
+        </div>
+        <div class="field" id="tpField" hidden>
+          <label for="targetPremium">Target Premium ($/mo)</label>
+          <input id="targetPremium" type="number" step="5" min="10" value="100" />
+        </div>
+        <fieldset class="riders">
+          <legend>Riders</legend>
+          <label><input type="checkbox" value="ADB"> ADB</label>
+          <label><input type="checkbox" value="Waiver"> Waiver of Premium</label>
+          <label><input type="checkbox" value="Child"> Child Rider</label>
+          <label><input type="checkbox" value="LTC"> Chronic/LTC</label>
+        </fieldset>
+
+        <div class="grid two-col">
+          <div class="field">
+            <label for="heightIn">Height (in)</label>
+            <input id="heightIn" type="number" min="48" max="84" value="70">
+          </div>
+          <div class="field">
+            <label for="weightLb">Weight (lb)</label>
+            <input id="weightLb" type="number" min="80" max="500" value="180">
+          </div>
+        </div>
+
+        <details open class="conditions">
+          <summary>Medical Conditions</summary>
+          <div id="condGroups"></div>
+        </details>
+
+        <div class="summary card">
+          <h4>Live Summary</h4>
+          <ul class="kv">
+            <li><span>UW Class</span> <strong id="uwClass">—</strong></li>
+            <li><span>Base Premium</span> <strong id="basePrem">$—</strong></li>
+            <li><span>Adjusted Premium</span> <strong id="adjPrem">$—</strong></li>
+            <li><span>Key Multipliers</span> <strong id="multis">—</strong></li>
+          </ul>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <script src="app.js"></script>
+
+  <!-- Fallback embedded JSON for offline use -->
+  <script id="fallback-company" type="application/json">
+  {
+  "brand": {
+    "name": "Atlas Life",
+    "tagline": "Protect today. Provide tomorrow.",
+    "primary": "#2563eb",
+    "secondary": "#0ea5e9",
+    "accent": "#10b981",
+    "dark": "#0b1020",
+    "light": "#ffffff",
+    "logo": "data/logo.svg"
+  },
+  "about": "Atlas Life is a demo-only carrier profile used for presentations. Financial strength and ratings here are illustrative.",
+  "benefits": [
+    "Fast, streamlined underwriting with e-app",
+    "Flexible riders for living benefits",
+    "Level term options from 10 to 30 years",
+    "Permanent solutions with guarantees",
+    "US-based service with dedicated claims advocates"
+  ],
+  "differentiators": [
+    "Instant decision for many applicants",
+    "No bloodwork in most cases",
+    "Convertible term options",
+    "Transparent pricing breakdowns"
+  ],
+  "claims_steps": [
+    "Notify us & submit claimant info",
+    "We review documents & verify",
+    "Decision & payout via preferred method"
+  ],
+  "personas": [
+    {
+      "title": "Young Family",
+      "desc": "Income replacement, mortgage protection, affordability focus"
+    },
+    {
+      "title": "Pre-Retiree",
+      "desc": "Final debts, legacy planning, liquidity"
+    },
+    {
+      "title": "Estate Planning",
+      "desc": "Guarantees, no-lapse coverage, larger face amounts"
+    },
+    {
+      "title": "Final Expense",
+      "desc": "Small, guaranteed whole life to cover end-of-life costs"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Jordan M.",
+      "quote": "The process was quick, and I knew my price upfront. Felt easy.",
+      "role": "Homeowner"
+    },
+    {
+      "name": "Priya K.",
+      "quote": "We added Waiver and Chronic Illness. The living benefits matter.",
+      "role": "Parent"
+    },
+    {
+      "name": "David C.",
+      "quote": "Clear explanations, no surprises in the policy.",
+      "role": "Small business owner"
+    }
+  ],
+  "contact": {
+    "rep_name": "Alex Rivera",
+    "rep_phone": "(555) 555-1212",
+    "rep_email": "alex.rivera@example.com"
+  }
+}
+  </script>
+  <script id="fallback-conditions" type="application/json">
+  {
+  "categories": [
+    {
+      "id": "cardio",
+      "label": "Cardio"
+    },
+    {
+      "id": "metabolic",
+      "label": "Metabolic"
+    },
+    {
+      "id": "resp",
+      "label": "Respiratory"
+    },
+    {
+      "id": "mental",
+      "label": "Mental Health"
+    },
+    {
+      "id": "lifestyle",
+      "label": "Lifestyle"
+    },
+    {
+      "id": "other",
+      "label": "Other"
+    }
+  ],
+  "items": [
+    {
+      "id": "htn_controlled",
+      "label": "Hypertension (controlled)",
+      "category": "cardio",
+      "multiplier": 1.05,
+      "class_drop": 0,
+      "tooltip": "Slight impact when controlled."
+    },
+    {
+      "id": "htn_uncontrolled",
+      "label": "Hypertension (uncontrolled)",
+      "category": "cardio",
+      "multiplier": 1.12,
+      "class_drop": 1,
+      "tooltip": "Raises risk; may drop class."
+    },
+    {
+      "id": "chol_high",
+      "label": "High Cholesterol",
+      "category": "metabolic",
+      "multiplier": 1.04,
+      "class_drop": 0,
+      "tooltip": "Mild impact with treatment."
+    },
+    {
+      "id": "dm2_a1c_lt75",
+      "label": "Diabetes T2 (A1C 6.5\u20137.4)",
+      "category": "metabolic",
+      "multiplier": 1.1,
+      "class_drop": 1,
+      "tooltip": "Well-managed Type 2."
+    },
+    {
+      "id": "dm2_a1c_75_9",
+      "label": "Diabetes T2 (A1C 7.5\u20139.0)",
+      "category": "metabolic",
+      "multiplier": 1.2,
+      "class_drop": 2,
+      "tooltip": "Moderate control."
+    },
+    {
+      "id": "obesity_bmi_30_35",
+      "label": "Obesity (BMI 30\u201335)",
+      "category": "lifestyle",
+      "multiplier": 1.1,
+      "class_drop": 1,
+      "tooltip": "Impacts class; see BMI."
+    },
+    {
+      "id": "obesity_bmi_35_40",
+      "label": "Obesity (BMI 35\u201340)",
+      "category": "lifestyle",
+      "multiplier": 1.2,
+      "class_drop": 2,
+      "tooltip": "Higher underwriting adjustment."
+    },
+    {
+      "id": "tobacco",
+      "label": "Tobacco/Nicotine",
+      "category": "lifestyle",
+      "multiplier": 1.15,
+      "class_drop": 1,
+      "tooltip": "Smoker class likely applies."
+    },
+    {
+      "id": "sleep_apnea",
+      "label": "Sleep Apnea",
+      "category": "resp",
+      "multiplier": 1.08,
+      "class_drop": 1,
+      "tooltip": "Treatment improves class."
+    },
+    {
+      "id": "cad_mi",
+      "label": "CAD/MI History",
+      "category": "cardio",
+      "multiplier": 1.35,
+      "class_drop": 3,
+      "tooltip": "Significant history; table rating possible."
+    },
+    {
+      "id": "stroke_tia",
+      "label": "Stroke/TIA",
+      "category": "cardio",
+      "multiplier": 1.3,
+      "class_drop": 3,
+      "tooltip": "Review recency and severity."
+    },
+    {
+      "id": "cancer_recent",
+      "label": "Cancer (recent treatment)",
+      "category": "other",
+      "multiplier": 1.4,
+      "class_drop": 4,
+      "tooltip": "Often substandard tables."
+    },
+    {
+      "id": "asthma",
+      "label": "Asthma/COPD",
+      "category": "resp",
+      "multiplier": 1.1,
+      "class_drop": 1,
+      "tooltip": "Controlled vs. severe differs."
+    },
+    {
+      "id": "depression",
+      "label": "Depression/Anxiety",
+      "category": "mental",
+      "multiplier": 1.05,
+      "class_drop": 0,
+      "tooltip": "Mild impact when stable."
+    },
+    {
+      "id": "liver",
+      "label": "Liver Disease",
+      "category": "other",
+      "multiplier": 1.25,
+      "class_drop": 2,
+      "tooltip": "May limit riders."
+    },
+    {
+      "id": "kidney",
+      "label": "Kidney Disease",
+      "category": "other",
+      "multiplier": 1.25,
+      "class_drop": 2,
+      "tooltip": "Further evaluation likely."
+    },
+    {
+      "id": "hiv",
+      "label": "HIV (Refer to carrier)",
+      "category": "other",
+      "multiplier": 1.6,
+      "class_drop": 4,
+      "tooltip": "Carrier-specific guidelines apply.",
+      "exclude": true
+    },
+    {
+      "id": "family_cad",
+      "label": "Family history: early CAD",
+      "category": "cardio",
+      "multiplier": 1.05,
+      "class_drop": 0,
+      "tooltip": "Mild impact."
+    },
+    {
+      "id": "dui_recent",
+      "label": "DUI (last 5 yrs)",
+      "category": "lifestyle",
+      "multiplier": 1.2,
+      "class_drop": 2,
+      "tooltip": "Non-medical risk consideration."
+    },
+    {
+      "id": "danger_hobby",
+      "label": "Dangerous hobbies",
+      "category": "lifestyle",
+      "multiplier": 1.1,
+      "class_drop": 1,
+      "tooltip": "Aviation/diving/etc."
+    }
+  ]
+}
+  </script>
+  <script id="fallback-objections" type="application/json">
+  {
+  "objections": [
+    {
+      "id": "price",
+      "title": "It's too expensive",
+      "tags": [
+        "price",
+        "budget"
+      ],
+      "pattern": "Acknowledge \u2192 Ask \u2192 Bridge \u2192 Value \u2192 Close",
+      "variants": [
+        "I hear you, {{client_name}}. If we keep your monthly at {{monthly_premium|money}}, we still secure {{death_benefit|shortMoney}} in coverage. What matters most: price or protection for {{reason_from_needs_analysis}}?",
+        "Totally fair. Many clients start with our Bronze option for {{monthly_premium|money}} and upgrade later. Would that help you feel comfortable starting today?"
+      ]
+    },
+    {
+      "id": "spouse",
+      "title": "I need to talk to my spouse",
+      "tags": [
+        "spouse",
+        "decision"
+      ],
+      "pattern": "Acknowledge \u2192 Ask \u2192 Bridge \u2192 Value \u2192 Close",
+      "variants": [
+        "Absolutely. What do you think your spouse will care about most\u2014price, benefits, or flexibility? We can send a summary now.",
+        "Great idea. While I have you, we can lock in {{death_benefit|shortMoney}} coverage for {{monthly_premium|money}} and change it after you both review. Sound good?"
+      ]
+    }
+  ]
+}
+  </script>
+</body>
+</html>

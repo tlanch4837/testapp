@@ -1,0 +1,99 @@
+/* Presentation styles — PowerPoint-like, with persistent right panel
+   Mobile-first, dark-mode aware, accessible
+*/
+:root{
+  --bg:#ffffff; --text:#0f172a; --muted:#64748b; --card:#ffffff; --border:#e2e8f0;
+  --primary:#2563eb; --accent:#10b981; --shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0b1020; --text:#e6edf7; --muted:#a8b3cf; --card:#0f1528; --border:#1f2a44; --primary:#60a5fa }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial}
+a{color:var(--primary)}
+img{max-width:100%; display:block}
+.skip-link{position:absolute; left:-9999px}
+.skip-link:focus{left:12px; top:12px; background:var(--primary); color:#fff; padding:8px 10px; border-radius:8px; z-index:1000}
+
+/* Topbar */
+.topbar{position:sticky; top:0; z-index:40; background:var(--card); border-bottom:1px solid var(--border)}
+.topbar{display:flex; align-items:center; gap:12px; padding:8px 14px}
+.topbar img{width:120px; height:auto}
+.brand-meta h1{font-size:18px; margin:0}
+.brand-meta p{margin:0; color:var(--muted); font-size:13px}
+.nav-tools{margin-left:auto; display:flex; align-items:center; gap:10px}
+.btn{appearance:none; border:none; border-radius:12px; padding:10px 14px; background:var(--primary); color:#fff; font-weight:700; cursor:pointer; box-shadow:var(--shadow)}
+.btn-secondary{background:transparent; color:var(--text); border:1px solid var(--border)}
+.btn:disabled{opacity:.6; cursor:not-allowed}
+
+/* Layout */
+.layout{display:grid; grid-template-columns: 1fr 320px; gap:14px; max-width:1400px; padding:14px; margin:0 auto}
+.stage{min-height:70vh; position:relative; overflow:hidden; border-radius:16px; background:linear-gradient(180deg, color-mix(in srgb, var(--primary), #000 2%) 0%, transparent 100%); border:1px solid var(--border)}
+.progress{position:absolute; left:0; right:0; bottom:0; height:6px; background:rgba(0,0,0,.06)}
+.progress #progressBar{height:100%; width:0; background:var(--primary); transition:width .25s ease}
+
+/* Slides */
+.slide{position:absolute; inset:0; padding:40px; opacity:0; transform:translateX(40px); transition:opacity .35s ease, transform .4s ease; display:grid; place-items:center}
+.slide.is-active{opacity:1; transform:translateX(0)}
+.slide-inner{max-width:900px; width:100%}
+.title{font-size:44px; margin:0 0 12px 0}
+.subtitle{font-size:22px; color:var(--muted); margin-top:0}
+.bullets{list-style:disc; padding-left:24px}
+.bullets.numbered{list-style:decimal}
+.build{opacity:0; transform:translateY(10px); transition:opacity .3s ease, transform .3s ease}
+.build.visible{opacity:1; transform:translateY(0)}
+
+.products{display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px}
+.prod{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:var(--shadow)}
+.personas{display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px}
+.testimonials{display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px}
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:var(--shadow)}
+
+.disclaimer{background:var(--card); border:1px dashed var(--border); border-radius:12px; padding:12px}
+
+/* Plans */
+.plan-toggle{display:flex; align-items:center; gap:12px; margin-bottom:12px}
+.plans{display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:14px}
+.plan{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:var(--shadow)}
+.plan header{display:flex; justify-content:space-between; align-items:center}
+.plan .badge{background:color-mix(in srgb, var(--primary), #000 10%); color:#fff; padding:6px 10px; border-radius:999px; font-weight:800}
+.plan .price{font-size:28px; font-weight:900}
+.kv{list-style:none; padding:0; margin:10px 0}
+.kv li{display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed var(--border)}
+.kv li:last-child{border-bottom:none}
+.plan .copy{color:var(--muted)}
+.plan-cta{width:100%}
+
+/* Right Panel */
+.panel{position:sticky; top:64px; align-self:start; height:calc(100vh - 90px); overflow:auto; border:1px solid var(--border); border-radius:16px; background:var(--card); box-shadow:var(--shadow); padding:14px}
+.inputs{display:grid; gap:10px}
+.field{display:grid; gap:6px}
+label{font-weight:600}
+input, select{padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text)}
+input:focus, select:focus{outline:3px solid color-mix(in srgb, var(--primary), #000 15%); outline-offset:1px}
+legend{font-weight:800}
+.switch label{display:inline-flex; align-items:center; gap:6px; margin-right:8px}
+.riders label{display:inline-flex; align-items:center; gap:6px; margin-right:8px}
+.conditions summary{cursor:pointer; padding:8px 0; color:var(--muted)}
+#condGroups{display:grid; gap:8px}
+.cond-group{border:1px solid var(--border); border-radius:12px; padding:8px}
+.cond-group h5{margin:0 0 6px 0; font-size:14px}
+.cond-group label{display:flex; align-items:center; gap:8px; padding:6px 0}
+.muted{color:var(--muted)}
+.error{color:#dc2626; font-size:12px; min-height:16px}
+
+/* Mobile: pin panel bottom 30% */
+@media (max-width: 860px){
+  .layout{grid-template-columns: 1fr}
+  .panel{position:fixed; bottom:0; top:auto; left:0; right:0; height:30vh; border-radius:16px 16px 0 0; z-index:30}
+  .stage{min-height:calc(70vh - 14px); padding-bottom:32vh}
+}
+
+/* Print */
+@media print{
+  .topbar, .panel, .progress{display:none !important}
+  .layout{grid-template-columns: 1fr}
+  .slide{position:static; opacity:1; transform:none; page-break-after:always}
+  .build{opacity:1; transform:none}
+}

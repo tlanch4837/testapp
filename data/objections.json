@@ -1,0 +1,30 @@
+{
+  "objections": [
+    {
+      "id": "price",
+      "title": "It's too expensive",
+      "tags": [
+        "price",
+        "budget"
+      ],
+      "pattern": "Acknowledge \u2192 Ask \u2192 Bridge \u2192 Value \u2192 Close",
+      "variants": [
+        "I hear you, {{client_name}}. If we keep your monthly at {{monthly_premium|money}}, we still secure {{death_benefit|shortMoney}} in coverage. What matters most: price or protection for {{reason_from_needs_analysis}}?",
+        "Totally fair. Many clients start with our Bronze option for {{monthly_premium|money}} and upgrade later. Would that help you feel comfortable starting today?"
+      ]
+    },
+    {
+      "id": "spouse",
+      "title": "I need to talk to my spouse",
+      "tags": [
+        "spouse",
+        "decision"
+      ],
+      "pattern": "Acknowledge \u2192 Ask \u2192 Bridge \u2192 Value \u2192 Close",
+      "variants": [
+        "Absolutely. What do you think your spouse will care about most\u2014price, benefits, or flexibility? We can send a summary now.",
+        "Great idea. While I have you, we can lock in {{death_benefit|shortMoney}} coverage for {{monthly_premium|money}} and change it after you both review. Sound good?"
+      ]
+    }
+  ]
+}
