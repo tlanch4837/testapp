@@ -11,6 +11,15 @@ const VERSION = "ppt-v1.0.0";
 // Modal factors assume ANNUAL base premium -> modal amount.
 const MODAL_FACTORS = { Annual: 1.00, Semiannual: 0.52, Quarterly: 0.27, Monthly: 0.09 };
 
+// Dropdown data
+const STATE_OPTIONS = [
+  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA",
+  "ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+  "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"
+];
+const POLICY_TYPES = ["Term","Whole","UL","IUL","GUL","Final Expense"];
+const TERM_OPTIONS = [10,15,20,25,30];
+
 // Policy fee by state (monthly equivalent)
 const STATE_POLICY_FEE = (st) => ({ FL:8, NY:7, CA:7, MI:6 }[st] ?? 6);
 
@@ -47,6 +56,12 @@ const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 const money = (n, c=true) => (isFinite(n)? n:0).toLocaleString(undefined,{style:"currency",currency:"USD", maximumFractionDigits: c?2:0});
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 function parseN(v){ const n = parseFloat(v); return isFinite(n)? n:0; }
+
+function populateSelect(el, options, def){
+  if (!el) return;
+  el.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join("");
+  if (def != null) el.value = String(def);
+}
 
 async function loadJSON(path, fallbackId){
   try{
@@ -244,6 +259,7 @@ function buildConditionsUI(){
       const id = `cond_${item.id}`;
       const row = document.createElement("label");
       row.innerHTML = `<input type="checkbox" id="${id}" data-id="${item.id}"> <span>${item.label}</span>` + (item.exclude ? ` <span class="muted">(refer)</span>`:"");
+      if (item.tooltip) row.title = item.tooltip;
       const cb = row.querySelector("input");
       cb.addEventListener("change", (e)=>{
         if (e.target.checked) state.selectedConditions.add(item.id);
@@ -493,6 +509,9 @@ if (typeof window !== "undefined") {
 
     // Slides + UI
     Slides.init();
+    populateSelect($("#state"), STATE_OPTIONS, "MI");
+    populateSelect($("#policyType"), POLICY_TYPES, "Term");
+    populateSelect($("#term"), TERM_OPTIONS, 20);
     buildConditionsUI();
     attachEvents();
     syncGoalToggle();
