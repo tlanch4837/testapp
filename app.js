@@ -391,10 +391,10 @@ function updatePlans(){
     let tierDB = db, billed;
     if (inputs.goal === "TP") {
       const tp = inputs.targetPremium * t.mult;
-      tierDB = solveDeathBenefit(tp, { ...inputs, riders: t.riders });
+      tierDB = solveDeathBenefit(tp, { ...inputs, riders: t.riders, conditions: inputs.selectedConditions });
       billed = tp;
     } else {
-      const r = computePremium({ ...inputs, deathBenefit: tierDB, riders: t.riders });
+      const r = computePremium({ ...inputs, deathBenefit: tierDB, riders: t.riders, conditions: inputs.selectedConditions });
       billed = r.billed * t.mult;
     }
     const annual = billed / MODAL_FACTORS[mode];
