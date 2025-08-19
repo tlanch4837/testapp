@@ -166,13 +166,14 @@ function computePremium(inputs){
     * conditionsMultiplier(conditions)
     * uw.multiplier;
 
-  annual += riderCost(riders, deathBenefit, annual);
+  const riderAnn = riderCost(riders, deathBenefit, annual);
+  annual += riderAnn;
   annual += (policyFee * 12);
 
   const billed = annual * modalFactor;
 
   return {
-    annual, billed, basePer1k, uw, bmiInfo,
+    annual, billed, basePer1k, uw, bmiInfo, riderAnn, policyFee,
     factors: {
       age: ageFactor(age),
       smoker: smokerFactor(policyType, smoker),
@@ -432,6 +433,25 @@ function bind(key, val){
   $$(`[data-bind="${key}"]`).forEach(el => el.textContent = val ?? "");
 }
 
+function showCalcBreakdown(){
+  const { inputs, res, db } = state.lastCalc || {};
+  if (!inputs || !res) return;
+  const lines = [
+    `Death Benefit: ${money(db, false)}`,
+    `Base Rate/1k: ${res.basePer1k.toFixed(2)}`,
+    `Age Factor: ${res.factors.age.toFixed(2)}`,
+    `Smoker Factor: ${res.factors.smoker.toFixed(2)}`,
+    `Product Factor: ${res.factors.product.toFixed(2)}`,
+    `Term Factor: ${res.factors.term.toFixed(2)}`,
+    `Conditions: ${res.factors.conditions.toFixed(2)}`,
+    `Rider Cost (annual): ${money(res.riderAnn)}`,
+    `Policy Fee (annual): ${money(res.policyFee*12)}`,
+    `Annual Premium: ${money(res.annual)}`,
+    `Billed (${inputs.modalSel}): ${money(res.billed)}`
+  ];
+  alert("How we calculated this:\n" + lines.join("\n"));
+}
+
 /* ====== Actions ====== */
 function attachEvents(){
   // Form changes
@@ -441,23 +461,13 @@ function attachEvents(){
   });
   $$("input[name=goal]").forEach(r => r.addEventListener("change", ()=>{ syncGoalToggle(); recompute(); }));
   $$("input[name=mode]").forEach(r => r.addEventListener("change", recompute));
+  $("#calcBtn")?.addEventListener("click", recompute);
 
   // Print
   $("#printBtn").addEventListener("click", () => window.print());
 
   // Tooltips / calc explainer
-  $("#howCalcBtn").addEventListener("click", ()=>{
-    alert(`Premium math (annual base → modal): 
-base = (DB/1k) × base_rate_per_1k(age, sex, product)
-premium = base × age × smoker × product × conditions × UW
-+ riders (annualized) + policy fee × 12
-Modal billed = annual × modal_factor
-
-Examples (annual per $1k):
-Term(20): 0.72 + 0.024×(age-30) (min 0.36)
-Whole: 1.20 + 0.048×(age-30) (min 0.72)
-Final Expense: flat by decade (50s: 1.68; 60s: 2.64; 70s: 4.56)`);
-  });
+  $("#howCalcBtn").addEventListener("click", showCalcBreakdown);
 
   // Copy plan summary
   $("#copyPlanBtn").addEventListener("click", () => {
@@ -476,8 +486,14 @@ Final Expense: flat by decade (50s: 1.68; 60s: 2.64; 70s: 4.56)`);
     a.click();
   });
 
-  // Plan CTA demo
-  $$(".plan-cta").forEach(btn => btn.addEventListener("click", () => alert("Plan selected — proceed to e-app (demo).")));
+  // Plan selection highlight
+  $$(".plan-cta").forEach(btn => btn.addEventListener("click", () => {
+    $$(".plan").forEach(p => p.classList.remove("selected"));
+    btn.closest(".plan")?.classList.add("selected");
+  }));
+
+  // Refresh breakdown when opening compare details
+  $$("details summary").forEach(s => s.addEventListener("click", updatePlans));
 }
 
 function buildPlanSummaryText(){
