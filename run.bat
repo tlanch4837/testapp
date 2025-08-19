@@ -8,3 +8,6 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 echo Starting static server on http://localhost:8080
 http-server . -p 8080 -c-1
+=======
+rem Start a static server for the presentation app
+npx http-server . -p 8080 -c-1
