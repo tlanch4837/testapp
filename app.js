@@ -11,6 +11,15 @@ const VERSION = "ppt-v1.0.0";
 // Modal factors assume ANNUAL base premium -> modal amount.
 const MODAL_FACTORS = { Annual: 1.00, Semiannual: 0.52, Quarterly: 0.27, Monthly: 0.09 };
 
+// Dropdown data
+const STATE_OPTIONS = [
+  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA",
+  "ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+  "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"
+];
+const POLICY_TYPES = ["Term","Whole","UL","IUL","GUL","Final Expense"];
+const TERM_OPTIONS = [10,15,20,25,30];
+
 // Policy fee by state (monthly equivalent)
 const STATE_POLICY_FEE = (st) => ({ FL:8, NY:7, CA:7, MI:6 }[st] ?? 6);
 
@@ -47,6 +56,12 @@ const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 const money = (n, c=true) => (isFinite(n)? n:0).toLocaleString(undefined,{style:"currency",currency:"USD", maximumFractionDigits: c?2:0});
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 function parseN(v){ const n = parseFloat(v); return isFinite(n)? n:0; }
+
+function populateSelect(el, options, def){
+  if (!el) return;
+  el.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join("");
+  if (def != null) el.value = String(def);
+}
 
 async function loadJSON(path, fallbackId){
   try{
@@ -151,13 +166,14 @@ function computePremium(inputs){
     * conditionsMultiplier(conditions)
     * uw.multiplier;
 
-  annual += riderCost(riders, deathBenefit, annual);
+  const riderAnn = riderCost(riders, deathBenefit, annual);
+  annual += riderAnn;
   annual += (policyFee * 12);
 
   const billed = annual * modalFactor;
 
   return {
-    annual, billed, basePer1k, uw, bmiInfo,
+    annual, billed, basePer1k, uw, bmiInfo, riderAnn, policyFee,
     factors: {
       age: ageFactor(age),
       smoker: smokerFactor(policyType, smoker),
@@ -244,6 +260,7 @@ function buildConditionsUI(){
       const id = `cond_${item.id}`;
       const row = document.createElement("label");
       row.innerHTML = `<input type="checkbox" id="${id}" data-id="${item.id}"> <span>${item.label}</span>` + (item.exclude ? ` <span class="muted">(refer)</span>`:"");
+      if (item.tooltip) row.title = item.tooltip;
       const cb = row.querySelector("input");
       cb.addEventListener("change", (e)=>{
         if (e.target.checked) state.selectedConditions.add(item.id);
@@ -416,6 +433,25 @@ function bind(key, val){
   $$(`[data-bind="${key}"]`).forEach(el => el.textContent = val ?? "");
 }
 
+function showCalcBreakdown(){
+  const { inputs, res, db } = state.lastCalc || {};
+  if (!inputs || !res) return;
+  const lines = [
+    `Death Benefit: ${money(db, false)}`,
+    `Base Rate/1k: ${res.basePer1k.toFixed(2)}`,
+    `Age Factor: ${res.factors.age.toFixed(2)}`,
+    `Smoker Factor: ${res.factors.smoker.toFixed(2)}`,
+    `Product Factor: ${res.factors.product.toFixed(2)}`,
+    `Term Factor: ${res.factors.term.toFixed(2)}`,
+    `Conditions: ${res.factors.conditions.toFixed(2)}`,
+    `Rider Cost (annual): ${money(res.riderAnn)}`,
+    `Policy Fee (annual): ${money(res.policyFee*12)}`,
+    `Annual Premium: ${money(res.annual)}`,
+    `Billed (${inputs.modalSel}): ${money(res.billed)}`
+  ];
+  alert("How we calculated this:\n" + lines.join("\n"));
+}
+
 /* ====== Actions ====== */
 function attachEvents(){
   // Form changes
@@ -425,23 +461,13 @@ function attachEvents(){
   });
   $$("input[name=goal]").forEach(r => r.addEventListener("change", ()=>{ syncGoalToggle(); recompute(); }));
   $$("input[name=mode]").forEach(r => r.addEventListener("change", recompute));
+  $("#calcBtn")?.addEventListener("click", recompute);
 
   // Print
   $("#printBtn").addEventListener("click", () => window.print());
 
   // Tooltips / calc explainer
-  $("#howCalcBtn").addEventListener("click", ()=>{
-    alert(`Premium math (annual base → modal): 
-base = (DB/1k) × base_rate_per_1k(age, sex, product)
-premium = base × age × smoker × product × conditions × UW
-+ riders (annualized) + policy fee × 12
-Modal billed = annual × modal_factor
-
-Examples (annual per $1k):
-Term(20): 0.72 + 0.024×(age-30) (min 0.36)
-Whole: 1.20 + 0.048×(age-30) (min 0.72)
-Final Expense: flat by decade (50s: 1.68; 60s: 2.64; 70s: 4.56)`);
-  });
+  $("#howCalcBtn").addEventListener("click", showCalcBreakdown);
 
   // Copy plan summary
   $("#copyPlanBtn").addEventListener("click", () => {
@@ -460,8 +486,14 @@ Final Expense: flat by decade (50s: 1.68; 60s: 2.64; 70s: 4.56)`);
     a.click();
   });
 
-  // Plan CTA demo
-  $$(".plan-cta").forEach(btn => btn.addEventListener("click", () => alert("Plan selected — proceed to e-app (demo).")));
+  // Plan selection highlight
+  $$(".plan-cta").forEach(btn => btn.addEventListener("click", () => {
+    $$(".plan").forEach(p => p.classList.remove("selected"));
+    btn.closest(".plan")?.classList.add("selected");
+  }));
+
+  // Refresh breakdown when opening compare details
+  $$("details summary").forEach(s => s.addEventListener("click", updatePlans));
 }
 
 function buildPlanSummaryText(){
@@ -479,23 +511,42 @@ function buildPlanSummaryText(){
 }
 
 /* ====== Init ====== */
-window.addEventListener("DOMContentLoaded", async () => {
-  // Load data
-  state.company = await loadJSON("data/company.json", "fallback-company");
-  state.conditions = await loadJSON("data/conditions.json", "fallback-conditions");
-  state.objections = await loadJSON("data/objections.json", "fallback-objections");
+if (typeof window !== "undefined") {
+  window.addEventListener("DOMContentLoaded", async () => {
+    // Load data
+    state.company = await loadJSON("data/company.json", "fallback-company");
+    state.conditions = await loadJSON("data/conditions.json", "fallback-conditions");
+    state.objections = await loadJSON("data/objections.json", "fallback-objections");
 
-  // Brand visuals
-  $("#brandName").textContent = state.company.brand.name;
-  $("#brandTag").textContent = state.company.brand.tagline;
-  $("#brandLogo").src = state.company.brand.logo;
+    // Brand visuals
+    $("#brandName").textContent = state.company.brand.name;
+    $("#brandTag").textContent = state.company.brand.tagline;
+    $("#brandLogo").src = state.company.brand.logo;
 
-  // Slides + UI
-  Slides.init();
-  buildConditionsUI();
-  attachEvents();
-  syncGoalToggle();
+    // Slides + UI
+    Slides.init();
+    populateSelect($("#state"), STATE_OPTIONS, "MI");
+    populateSelect($("#policyType"), POLICY_TYPES, "Term");
+    populateSelect($("#term"), TERM_OPTIONS, 20);
+    buildConditionsUI();
+    attachEvents();
+    syncGoalToggle();
 
-  // First compute
-  recompute();
-});
+    // First compute
+    recompute();
+  });
+}
+
+// Export helpers for Node/CommonJS consumers (e.g., unit tests)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    baseRatePer1k,
+    ageFactor,
+    smokerFactor,
+    productFactor,
+    conditionsMultiplier,
+    riderCost,
+    computePremium,
+    solveDeathBenefit,
+  };
+}
